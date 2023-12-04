@@ -20,7 +20,6 @@ fun parseInput(rawInput: String): List<Game> = rawInput.split(System.lineSeparat
 
 val availableCubes = mapOf("red" to 12, "green" to 13, "blue" to 14)
 
-
 fun solve1(games: List<Game>): Int =
     games.filter { cube ->
         cube.reaches.all { reach ->
@@ -30,7 +29,7 @@ fun solve1(games: List<Game>): Int =
         }
     }.sumOf { it.id }
 
-fun sumMinimals(game: Game): Int {
+fun getGamePower(game: Game): Int {
     val mins = mutableMapOf("red" to 0, "green" to 0, "blue" to 0)
 
     game.reaches.forEach { reach ->
@@ -43,8 +42,7 @@ fun sumMinimals(game: Game): Int {
 }
 
 fun solve2(games: List<Game>): Int =
-    games.sumOf { sumMinimals(it) }
-
+    games.sumOf { getGamePower(it) }
 
 fun main() {
     val rawInput = readFile("src\\main\\kotlin\\day2\\input.txt")
