@@ -3,7 +3,7 @@ package day4
 import readFile
 import kotlin.math.pow
 
-data class Card(val id: Int, val winningNumbers: List<Int>, val numbers: List<Int>)
+data class Card(val id: Int, val winningNumbers: List<Int>, val numbers: Set<Int>)
 typealias Cards = List<Card>
 
 fun parseInput(input: String): Cards =
@@ -13,7 +13,7 @@ fun parseInput(input: String): Cards =
         val numbersSplit = idNumbersSplit[1].split(" | ").map {
             it.trim().replace("  ", " ").split(' ').map { it.toInt() }
         }
-        Card(cardId, numbersSplit[0], numbersSplit[1])
+        Card(cardId, numbersSplit[0], numbersSplit[1].toSet())
     }
 
 fun calculateCardMatches(card: Card): Int = card.winningNumbers.filter { card.numbers.contains(it) }.size
@@ -31,23 +31,21 @@ fun calculateCardScore(card: Card): Int {
 fun solve1(cards: Cards): Int =
     cards.sumOf { calculateCardScore(it) }
 
-fun solve2(origCards: Cards): Int {
-    val cards = origCards.toMutableList()
-    val cardsIterator = cards.listIterator()
+fun solve2(cards: Cards): Int {
+    val cardAmounts = mutableMapOf(*cards.map { Pair(it.id, 1) }.toTypedArray())
 
-    while (cardsIterator.hasNext()) {
-        val card = cardsIterator.next()
-        val cardMatches = calculateCardMatches(card)
-        for (j in 1..cardMatches) {
-            val stepCard = origCards.find { it.id == card.id + j }
-            if (stepCard != null) {
-                cardsIterator.add(stepCard)
-                cardsIterator.previous()
+    for (card in cards) {
+        val matches = calculateCardMatches(card)
+
+        for (i in 1..matches) {
+            val relativeCard = cardAmounts[i + card.id]
+            if (relativeCard != null) {
+                cardAmounts[i + card.id] = relativeCard + cardAmounts[card.id]!!
             }
         }
     }
 
-    return cards.size
+    return cardAmounts.values.sum()
 }
 
 fun main() {
