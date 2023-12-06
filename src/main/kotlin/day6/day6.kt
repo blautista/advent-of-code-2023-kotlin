@@ -1,6 +1,7 @@
 package day6
 
 import readFile
+import kotlin.math.*
 
 data class Race(val time: Long, val distance: Long)
 
@@ -20,26 +21,24 @@ fun parseInputWithoutKerning(input: String): Race {
     return Race(time, distance)
 }
 
-fun calculateTravelledDistance(timeHeld: Long, totalTime: Long): Long {
-    return timeHeld * (totalTime - timeHeld)
+fun quadratic(a: Double, b: Double, c: Double): Pair<Double, Double> {
+    val d = sqrt(b.pow(2) - (4 * a * c))
+    return Pair((-b + d) / (2 * a), (-b - d) / (2 * a))
 }
 
-fun bruteForcePossibleRecords(race: Race): Long {
-    var records = 0L
+fun getPossibleRecords(race: Race): Long {
+    val (time, distance) = race
 
-    for (i in 0..race.time) {
-        val travelledDistance = calculateTravelledDistance(i, race.time)
-        if (travelledDistance > race.distance) records++
-    }
+    val (min, max) = quadratic((-1).toDouble(), time.toDouble(), -(distance + 1).toDouble())
 
-    return records
+    return (floor(max) - ceil(min)).toLong() + 1
 }
 
 fun solve1(races: List<Race>): Long = races.map {
-    bruteForcePossibleRecords(it)
+    getPossibleRecords(it)
 }.fold(1) { p, c -> p * c }
 
-fun solve2(race: Race): Long = bruteForcePossibleRecords(race)
+fun solve2(race: Race): Long = getPossibleRecords(race)
 
 fun main() {
     val inputString = readFile("src\\main\\kotlin\\day6\\input.txt")
