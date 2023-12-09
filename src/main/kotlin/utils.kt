@@ -1,5 +1,9 @@
 import java.io.File
 
+fun <T> MutableList<T>.prepend(element: T) {
+    add(0, element)
+}
+
 fun readFile(path: String) = File(path).bufferedReader().use { it.readText() }
 
 tailrec fun gcd(a: Long, b: Long): Long = if (b <= 0) a else gcd(b, a % b)
